@@ -1,0 +1,29 @@
+function SendMail() {
+  
+  var nm = 1;
+  var mobile = 2;
+  var email = 3;
+
+  var emailTemp = HtmlService.createTemplateFromFile("email_body");
+
+  var ws = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Students");
+  var wsSettings = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Settings");  
+
+var subject = wsSettings.getRange("B1").getValue();
+var name = wsSettings.getRange("B2").getValue();
+
+var data = ws.getRange("A2:E" + ws.getLastRow()).getValues();
+
+data = data.filter(function(r) {return r[4] == true});
+
+data.forEach(function(row) {
+
+  emailTemp.nm = row[nm];
+  emailTemp.phone = row[mobile];
+
+  var htmlMessage = emailTemp.evaluate().getContent();
+  GmailApp.sendEmail(row[email], subject, "Your mail does not support html.",{name:name,htmlBody:htmlMessage});
+
+});
+
+}
